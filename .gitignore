@@ -165,5 +165,3 @@ cython_debug/
 log/
 model_ckpt/
 sim_data/
-preprocess/
-rollout/
