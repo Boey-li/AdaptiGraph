@@ -1,0 +1,16 @@
+dataset:
+  folder: "../sim_data" # folder to save data
+  obj: "box"
+
+  # data collection
+  base: 0
+  n_episode: 1000
+  n_timestep: 50
+  
+  # sim env
+  screenWidth: 720
+  screenHeight: 720
+
+  box_width: [150, 300]
+  box_height: [50, 200]
+  

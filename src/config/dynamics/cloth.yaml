@@ -1,0 +1,93 @@
+dataset_config:
+  data_name: "cloth"
+  materials: ["cloth"]
+  data_dir: "../sim_data" # data directory
+  prep_data_dir: "../preprocess" # preprocessed data directory
+  device: "cuda:0"
+
+  verbose: False
+  # preprocess
+  n_his: 4
+  n_future: 3
+  dist_thresh: 0.1 # 1.0cm
+
+  ratio:
+    train: [0, 0.98]
+    valid: [0.98, 1]
+
+  eef:
+    max_neef: 2
+    name: ['left_finger', 'right_finger']
+    pos: [[0., -0.2, 0.6], 
+          [0., 0.2, 0.6]]
+  
+  datasets:
+    - name: 'cloth'
+      max_nobj: 100
+      max_nR: 1000
+      fps_radius_range: [0.24, 0.26]
+      adj_radius_range: [0.74, 0.76]
+      topk: 5
+      connect_tool_all: True
+  
+  randomness: 
+    use: False
+    state_noise:
+      train: 0.075
+      valid: 0.0
+    phys_noise:
+      train: 0.0
+      valid: 0.0
+    
+train_config:
+  out_dir: "../log"
+  phases: ['train', 'valid']
+  num_workers: 1
+  random_seed: 42
+  verbose: False
+
+  batch_size: 128
+  n_epochs: 100
+  n_iters_per_epoch: 
+    train: 1000
+    valid: 100
+  log_interval: 50
+
+model_config:
+  verbose: False
+
+  nf_particle: 150
+  nf_relation: 150
+  nf_effect: 150
+  nf_physics: 10
+
+  # particle encoder
+  attr_dim: 2 # object and eef
+  state_dim: 0 # x, y, z 
+  offset_dim: 0
+  action_dim: 3
+  density_dim: 0 # particle density
+
+  pstep: 3 # propagation steps
+  sequence_len: 4
+  
+  # relation encoder
+  rel_particle_dim: 0
+  rel_attr_dim: 2 # within objects, object-eef
+  rel_group_dim: 1 # sum of difference of group one-hot vector
+  rel_distance_dim: 3
+  rel_density_dim: 0
+
+rollout_config:
+  out_dir: "../rollout"
+  rollout_steps: 100
+
+material_config:
+  material_index:
+    cloth: 0
+  cloth:
+    physics_params: 
+      - name: "sf"
+        use: True
+        min: 0.
+        max: 1.

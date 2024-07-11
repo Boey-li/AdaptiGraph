@@ -1,0 +1,44 @@
+task_config:
+  material: rope
+  config: config/dynamics/rope.yaml
+  epoch: 100
+
+  material_indices:
+    rope: 0
+  material_dims:
+    rope: 1
+  fps_radius: 0.20
+  adj_thresh: 0.50
+  eef_num: 1
+  topk: 10
+  connect_tools_all: False
+
+  sim_real_ratio: 10
+  push_length: 0.1
+  rotate_pusher: False
+  pusher_points:
+    - [0.0, 0.0, 0.12]
+  bbox: [-0.45, 0.0, -0.25, 0.45, -0.2, 0.05]
+  clipping_height: -0.059
+  gripper_enable: False
+
+  obj_list: ['rope']  # include target objects
+  k_filter: 0.5
+
+  action_lower_lim: [-4.5, -2.5, -3.14, 5]  # sim_real_ratio * bbox
+  action_upper_lim: [0.0, 4.5, 3.14, 15]  # sim_real_ratio * bbox
+  max_n: 1
+  max_nobj: 200
+  max_nR: 2000
+  n_his: 4
+
+  target_type: pcd
+  target: dump/vis_real_world/target.pcd
+  penalty_type: rope
+
+  n_actions: 10
+  n_look_ahead: 1
+  n_sample: 20000
+  n_sample_chunk: 500
+  noise_level: 1.0
+  reward_weight: 500.0

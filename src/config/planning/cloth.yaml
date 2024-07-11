@@ -1,0 +1,44 @@
+task_config:
+  material: cloth
+  config: config/dynamics/cloth.yaml
+  epoch: 100
+
+  material_indices:
+    cloth: 0
+  material_dims:
+    cloth: 1
+  fps_radius: 0.30
+  adj_thresh: 0.75
+  eef_num: 1
+  topk: 5
+  connect_tools_all: True
+
+  sim_real_ratio: 10
+  push_length: 0.1
+  rotate_pusher: True
+  pusher_points:
+    - [0.0, 0.0, 0.170]
+  bbox: [-0.45, 0.0, -0.25, 0.45, -0.2, 0.05]
+  clipping_height: -0.061
+  gripper_enable: True
+
+  obj_list: ['cloth']  # include target objects
+  k_filter: 1.0
+
+  action_lower_lim: [-4.5, -2.5, -3.14, 2]  # sim_real_ratio * bbox
+  action_upper_lim: [0.0, 4.5, 3.14, 10]  # sim_real_ratio * bbox
+  max_n: 1
+  max_nobj: 200
+  max_nR: 2000
+  n_his: 4
+
+  target_type: pcd
+  target: dump/vis_real_world/target.pcd
+  penalty_type: cloth
+
+  n_actions: 10
+  n_look_ahead: 1
+  n_sample: 20000
+  n_sample_chunk: 500
+  noise_level: 1.0
+  reward_weight: 500.0

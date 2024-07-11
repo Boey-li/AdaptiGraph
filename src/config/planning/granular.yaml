@@ -1,0 +1,48 @@
+task_config:
+  material: granular
+  config: config/dynamics/granular.yaml
+  epoch: 100
+
+  material_indices:
+    granular: 0
+  material_dims:
+    granular: 1
+  fps_radius: 0.20
+  adj_thresh: 0.40
+  eef_num: 5
+  topk: 20
+  connect_tools_all: False
+
+  sim_real_ratio: 10
+  push_length: 0.2
+  rotate_pusher: True
+  pusher_points:
+    - [0.0, 0.0, 0.1]
+    - [0.0, 0.05, 0.1]
+    - [0.0, 0.025, 0.1]
+    - [0.0, -0.025, 0.1]
+    - [0.0, -0.05, 0.1]
+  bbox: [-0.45, 0.0, -0.25, 0.45, -0.2, 0.05]
+  clipping_height: -0.061
+  gripper_enable: False
+  
+  obj_list: ['beans', 'candies', 'blocks']  # include target objects
+  k_filter: 1.0
+
+  action_lower_lim: [-4.5, -2.5, -3.14, 2]  # sim_real_ratio * bbox
+  action_upper_lim: [0.0, 4.5, 3.14, 10]  # sim_real_ratio * bbox
+  max_n: 1
+  max_nobj: 200
+  max_nR: 2000
+  n_his: 4
+
+  target_type: box
+  target: [-0.40, -0.25, 0.0, 0.15]
+  penalty_type: granular
+
+  n_actions: 10
+  n_look_ahead: 1
+  n_sample: 20000
+  n_sample_chunk: 500
+  noise_level: 1.0
+  reward_weight: 500.0
