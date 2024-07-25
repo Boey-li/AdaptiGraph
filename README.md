@@ -87,7 +87,11 @@ Full installation:
 ```
 pip install "pybind11[global]"
 sudo docker pull xingyu/softgym
+```
+Run `bash install_pyflex.sh`. You may need to `source ~/.bashrc` to `import PyFleX`.
 
+Or you can manually run
+```
 # compile pyflex in docker image
 # re-compile if source code changed
 # make sure ${PWD}/PyFleX is the pyflex root path when re-compiling
@@ -108,7 +112,6 @@ echo 'export PYTHONPATH=${PYFLEXROOT}/bindings/build:$PYTHONPATH' >> ~/.bashrc
 echo 'export LD_LIBRARY_PATH=${PYFLEXROOT}/external/SDL2-2.0.4/lib/x64:$LD_LIBRARY_PATH' >> ~/.bashrc
 echo '' >> ~/.bashrc
 ```
-
 
 ## 🖥️ Data
 
