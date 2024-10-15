@@ -1,5 +1,6 @@
 dataset_config:
   data_name: "rope"
+  output_name: "rope_quarter_chunks_og_and_0.5"
   materials: ["rope"]
   data_dir: "../sim_data" # data directory
   prep_data_dir: "../preprocess" # preprocessed data directory

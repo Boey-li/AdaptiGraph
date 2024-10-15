@@ -231,7 +231,8 @@ def visualize_graph(imgs, cam_info,
 
 
 def construct_graph(dataset_config, material_config, eef_pos, obj_pos,
-                    n_his, pair, physics_param):
+                    n_his, pair, physics_param, physics_param_shift):
+    print("constructing graph for rollout...")
     ## config
     dataset = dataset_config['datasets'][0]
     max_nobj = dataset['max_nobj']
@@ -249,6 +250,8 @@ def construct_graph(dataset_config, material_config, eef_pos, obj_pos,
     ### construct graph ###
 
     ## get history keypoints
+    # obj are probably the object's key points
+    # eef are probably the end effector's key points
     obj_kps = []
     eef_kps = []
     for i in range(len(pair)):
@@ -365,10 +368,30 @@ def construct_graph(dataset_config, material_config, eef_pos, obj_pos,
         "eef_kp": eef_kp,  # (2, N_eef, 3)
     }
 
+    print(f"physics params: {physics_param}")
+    print(f"obj dim: {obj_dim}")
+    # physics param is normalized between 0 and 1
     for material_name in physics_param.keys():
-        graph[material_name + '_physics_param'] = physics_param[material_name]
+        #graph[material_name + '_physics_param'] = physics_param[material_name]
+        print(f"material: {material_name}, original physics_param: {physics_param[material_name]}")
+        # Try changing the physics param such that each obj particle has its own physics parameter (N, phys_param)
+        # Half normal stiffness, half extra stiffness
+        physics_for_each_obj = np.zeros((obj_dim), dtype=np.float32)
+        #physics_for_each_obj[:int(obj_dim/2)] = physics_param[material_name].numpy()
+        #physics_for_each_obj[int(obj_dim/2):] = 0.5  #1.0  #physics_param[material_name].numpy() + 4.0
+        #physics_for_each_obj[:] = physics_param[material_name].numpy() + 1.0
+        # Alternate chunks of soft and stiff rope
+        step = int(obj_dim/4)
+        physics_for_each_obj[:step] = physics_param[material_name].numpy()
+        physics_for_each_obj[step:2*step] = 0.5  #physics_param[material_name].numpy()
+        physics_for_each_obj[2*step:3*step] = physics_param[material_name].numpy()
+        physics_for_each_obj[3*step:] = 0.5
+        graph[material_name + "_physics_param"] = torch.tensor(physics_for_each_obj)
+        #graph[material_name + "_physics_param"] = physics_param[material_name] + torch.tensor([physics_param_shift])
 
+    print(f"new _physics_param: {graph['rope_physics_param']}, size: {graph['rope_physics_param'].size()}")
     ### finish constructing graph ###
+    print("graph keys: ", graph.keys())
     return graph, fps_idx_list
 
 def get_next_pair_or_break_episode(pairs, n_his, n_frames, current_end):

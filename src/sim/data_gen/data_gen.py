@@ -5,6 +5,9 @@ import multiprocessing as mp
 import argparse
 import pickle
 
+import sys
+sys.path.append(".")
+
 from sim.sim_env.flex_env import FlexEnv
 from sim.data_gen.data import store_data
 from sim.utils import load_yaml
@@ -41,10 +44,10 @@ def gen_data(info):
     # save initial data
     if save_data:
         # save data [info, action, positions, eef_states, observations]
-        filename = os.path.join(epi_dir, f'{0:02}.h5')
+        filename = os.path.join(epi_dir, f'new_sim{0:02}.h5')
         store_data(filename, data, actions[0])
         # save physics params
-        with open(os.path.join(epi_dir, 'property_params.pkl'), 'wb') as f:
+        with open(os.path.join(epi_dir, 'new_sim_property_params.pkl'), 'wb') as f:
             pickle.dump(physics_params, f)
         # save camera params
         if idx_episode == base_0:
@@ -53,8 +56,8 @@ def gen_data(info):
             # cam_intrinsic_params: (num_cameras, 4)
             # cam_extrinsic_matrix: (num_cameras, 4, 4)
             cam_intrinsic_params, cam_extrinsic_matrix = env.cam_intrinsic_params, env.cam_extrinsic_matrix
-            np.save(os.path.join(cam_dir, 'intrinsic.npy'), cam_intrinsic_params)
-            np.save(os.path.join(cam_dir, 'extrinsic.npy'), cam_extrinsic_matrix)
+            np.save(os.path.join(cam_dir, 'new_sim_intrinsic.npy'), cam_intrinsic_params)
+            np.save(os.path.join(cam_dir, 'new_sim_extrinsic.npy'), cam_extrinsic_matrix)
         
     # n_pushes
     color_threshold = dataset_config['color_threshold']

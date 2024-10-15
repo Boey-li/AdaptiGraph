@@ -168,8 +168,10 @@ def rollout_episode_pushes(model, device, dataset_config, material_config,
         obj_pos_epi = obj_pos[episode_idx] # (T, N_obj, 3)
     
         ## construct graph
+        physics_param_shift = i
+        print(f"constructing graph with physics param shift {i}")
         graph, fps_idx_list = construct_graph(dataset_config, material_config, eef_pos_epi, obj_pos_epi,
-                                        n_his, pair, physics_param)
+                                        n_his, pair, physics_param, physics_param_shift)
     
         ## rollout from start
         error_list = rollout_from_start_graph(graph, fps_idx_list, dataset_config, material_config,
@@ -285,13 +287,18 @@ def rollout(config, epoch, viz=False):
     
     data_name = dataset_config['data_name']
     out_dir = os.path.join(rollout_config['out_dir'])
-    save_dir = os.path.join(out_dir, f'rollout-{data_name}-model_{epoch}')
+    if "output_name" in dataset_config:
+        save_dir = os.path.join(out_dir, f'rollout-{dataset_config["output_name"]}-model_{epoch}')
+        print("output_name save dir: ", save_dir)
+    else:
+        save_dir = os.path.join(out_dir, f'rollout-{data_name}-model_{epoch}')
     os.makedirs(save_dir, exist_ok=True)
     if epoch == 'latest':
         checkpoint_dir = os.path.join(train_config['out_dir'], data_name, 'checkpoints', 'latest.pth')
     else:
         checkpoint_dir = os.path.join(train_config['out_dir'], data_name, 'checkpoints', 'model_{}.pth'.format(epoch))
     
+    print("checkpoint_dir: ", checkpoint_dir) 
     ## load model
     model = DynamicsPredictor(model_config, 
                               material_config,
