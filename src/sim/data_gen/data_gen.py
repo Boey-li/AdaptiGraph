@@ -21,7 +21,7 @@ def gen_data(info):
     
     if save_data:
         # create folder
-        obj_dir = os.path.join(data_dir, obj)
+        obj_dir = os.path.join(data_dir, obj+"_test_gen")
         epi_dir = os.path.join(obj_dir, f'{idx_episode:06}')
         os.makedirs(epi_dir, exist_ok=True)
 

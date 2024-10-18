@@ -22,6 +22,7 @@ def rope_scene():
         
         # rope stiffness
         stiffness = np.random.rand()
+        print(f"rope stiffness for uniform: {stiffness}")
         if stiffness < 0.5:
                 global_stiffness = stiffness * 1e-4 / 0.5
                 cluster_spacing = 2 + 8 * stiffness
