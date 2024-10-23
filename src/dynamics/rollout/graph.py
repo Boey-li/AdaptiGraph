@@ -46,7 +46,7 @@ def visualize_graph(imgs, cam_info,
         start, end, vis_t, save_dir, max_nobj,
         colormap=None, point_size=4, edge_size=1, line_size=2, line_alpha=0.5, t_line=5,
         gt_lineset=None, pred_lineset=None, 
-        pred_kp_proj_last=None, gt_kp_proj_last=None):
+        pred_kp_proj_last=None, gt_kp_proj_last=None, physics_param=None):
     
     if colormap is None:
         colormap = rgb_colormap(repeat=100)
@@ -114,6 +114,15 @@ def visualize_graph(imgs, cam_info,
     tool_kp_proj[:, 1] = tool_kp_homo[:, 1] * fy / tool_kp_homo[:, 2] + cy
 
     # visualize
+    print(f"shape of obj_kp_proj: {obj_kp_proj.shape}, physics_param shape: {physics_param.shape}")
+    # map physics param to color
+    phys2color = {}
+    count = 0
+    for i in range(physics_param.shape[0]):
+        if physics_param[i] not in phys2color:
+            phys2color[physics_param[i]] = count
+            count += 1
+    
     for k in range(obj_kp_proj.shape[0]):
         cv2.circle(img, (int(obj_kp_proj[k, 0]), int(obj_kp_proj[k, 1])), point_size, 
             (int(colormap[k, 2]), int(colormap[k, 1]), int(colormap[k, 0])), -1)
@@ -373,14 +382,14 @@ def construct_graph(dataset_config, material_config, eef_pos, obj_pos,
     # physics param is normalized between 0 and 1
     mat = None
     for material_name in physics_param.keys():
-        graph[material_name + '_physics_param'] = physics_param[material_name]
+        #graph[material_name + '_physics_param'] = physics_param[material_name]
         print(f"material: {material_name}, original physics_param: {physics_param[material_name]}")
         mat = material_name
         # Try changing the physics param such that each obj particle has its own physics parameter (N, phys_param)
         # Half normal stiffness, half extra stiffness
-        #physics_for_each_obj = np.zeros((obj_dim), dtype=np.float32)
+        physics_for_each_obj = np.zeros((obj_dim), dtype=np.float32)
         #physics_for_each_obj[:int(obj_dim/2)] = physics_param[material_name].numpy()
-        #physics_for_each_obj[int(obj_dim/2):] = physics_param[material_name].numpy() + 1.0
+        physics_for_each_obj[int(obj_dim/2):] = physics_param[material_name].numpy() + 1.0
         #physics_for_each_obj[:] = physics_param[material_name].numpy() + 1.0
         
         # Alternate chunks of soft and stiff rope
@@ -389,7 +398,7 @@ def construct_graph(dataset_config, material_config, eef_pos, obj_pos,
         #physics_for_each_obj[step:2*step] = 0.5  #physics_param[material_name].numpy() + 1.0
         #physics_for_each_obj[2*step:3*step] = physics_param[material_name].numpy() + 1.0
         #physics_for_each_obj[3*step:] = 0.5  #physics_param[material_name] + 1.0
-        #graph[material_name + "_physics_param"] = torch.tensor(physics_for_each_obj)
+        graph[material_name + "_physics_param"] = torch.tensor(physics_for_each_obj)
         #graph[material_name + "_physics_param"] = physics_param[material_name] + torch.tensor([physics_param_shift])
 
     print(f"new _physics_param: {graph[mat+'_physics_param']}, size: {graph[mat+'_physics_param'].size()}")

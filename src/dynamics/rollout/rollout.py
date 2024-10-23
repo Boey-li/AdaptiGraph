@@ -51,10 +51,15 @@ def rollout_from_start_graph(graph, fps_idx_list, dataset_config, material_confi
         
         save_dir = os.path.join(save_dir, f"cam_{cam_info['cam']}")
         os.makedirs(save_dir, exist_ok=True)
+
+        physics_param = None
+        for name in graph.keys():
+            if name.endswith('_physics_param'):
+                physics_param = graph[name]
         
         pred_kp_proj_last, gt_kp_proj_last, gt_lineset, pred_lineset = \
             visualize_graph(imgs, cam_info, kp_vis, kp_vis, eef_kp, Rr, Rs,
-                            current_start, current_end, 0, save_dir, max_nobj)
+                            current_start, current_end, 0, save_dir, max_nobj, physics_param=physics_param)
 
     ## prepare graph
     graph = {key: graph[key].unsqueeze(0).to(device) for key in graph.keys()}
@@ -131,8 +136,10 @@ def rollout_from_start_graph(graph, fps_idx_list, dataset_config, material_confi
                 "state_mask": graph["state_mask"],  # (N+M,)
                 "material_index": graph["material_index"],  # (N, num_materials)
             }
+            mat_name = None
             for name in graph.keys():
                 if name.endswith('_physics_param'):
+                    mat_name = name
                     new_graph[name] = graph[name]
             
             graph = new_graph
@@ -143,7 +150,7 @@ def rollout_from_start_graph(graph, fps_idx_list, dataset_config, material_confi
                 visualize_graph(imgs, cam_info, obj_kp_vis, gt_kp_vis, eef_kp, Rr, Rs,
                                 current_start, current_end, i, save_dir, max_nobj,
                                 gt_lineset=gt_lineset, pred_lineset=pred_lineset,
-                                pred_kp_proj_last=pred_kp_proj_last, gt_kp_proj_last=gt_kp_proj_last)
+                                pred_kp_proj_last=pred_kp_proj_last, gt_kp_proj_last=gt_kp_proj_last, physics_param=graph[mat_name])
                 
     return error_list
 
