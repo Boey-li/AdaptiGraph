@@ -20,7 +20,8 @@
 [Website](https://robopil.github.io/adaptigraph/) |
 [Paper](https://robopil.github.io/adaptigraph/AdaptiGraph_RSS24.pdf) |
 [ArXiv](https://arxiv.org/abs/2407.07889) |
-[Data&Ckpt](https://drive.google.com/drive/folders/1HR39B7PXbYkM2w3XcA3feTCRCZH1q7UG?usp=sharing)
+[Data](https://huggingface.co/datasets/boeyyyy/AdaptiGraph-data) |
+[Ckpt](https://huggingface.co/boeyyyy/AdaptiGraph)
 
 <img src="assets/teaser.png" alt="drawing" width="100%"/>
 
@@ -44,7 +45,7 @@ conda activate adaptigraph
 pip install torch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 --index-url https://download.pytorch.org/whl/cu121
 
 # install required packages for the dynamics model
-pip install opencv-contrib-python scipy scikit-optimize cma pyyaml dgl matplotlib open3d threadpoolctl gdown ipdb pydantic moviepy
+pip install opencv-contrib-python scipy scikit-optimize cma pyyaml dgl matplotlib open3d threadpoolctl huggingface_hub ipdb pydantic moviepy
 ```
 
 The following are optional installation steps for real planning experiments and simulation data generation:
@@ -65,10 +66,10 @@ pip install -e .
 cd ..
 mkdir -p src/planning/dump/weights
 cd src/planning/dump/weights
-gdown 1pc195KITtCCLteHkxD7mr1w-cG8XAvTs  # download DINO+SAM weights
-gdown 1X-Et3-5TdSWuEUfq9gs_Ng-V-hypmLdB
-gdown 1HR3O-rMv9qJoTrG6GNxi-4ZVREQzZ1Rf
-gdown 1kN4trMTo5cavUqRSkYu0uzJq4mcL_ul_
+# download GroundingDINO + SAM weights from their official releases
+wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha2/groundingdino_swinb_cogcoor.pth
+wget https://raw.githubusercontent.com/IDEA-Research/GroundingDINO/main/groundingdino/config/GroundingDINO_SwinB_cfg.py
+wget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth
 cd -
 
 # (optional) install additional packages for simulation data generation
@@ -117,7 +118,12 @@ echo '' >> ~/.bashrc
 
 ### Simulation data
 
-We share a small set of simulation data for this project at [sim_data](https://drive.google.com/drive/folders/1HR39B7PXbYkM2w3XcA3feTCRCZH1q7UG?usp=sharing), which contains 100 episodes (98 for training and 2 for validation and visualization) for each material. Download and upzip the data, and put it into `./sim_data/`, the data format should be:
+We share a small set of simulation data for this project on [Hugging Face](https://huggingface.co/datasets/boeyyyy/AdaptiGraph-data), which contains 100 episodes (98 for training and 2 for validation and visualization) for each material. Download and unzip the data into `./sim_data/` (run from the repo root):
+```
+hf download boeyyyy/AdaptiGraph-data --repo-type dataset --local-dir sim_data
+cd sim_data && for m in rope granular cloth; do unzip -q $m.zip; done && cd ..
+```
+The data format should be:
 
 ```
 sim_data
@@ -194,7 +200,11 @@ where `rope.yaml` can be replaced by other material yaml file.
 
 ### Rollout 
 
-We provide the model checkpoints for each material at [model_ckpt](https://drive.google.com/drive/folders/1HR39B7PXbYkM2w3XcA3feTCRCZH1q7UG?usp=sharing). Please download it and put the checkpoint into `./log/{data_name}/checkpoints`. The dir format should be:
+We provide the model checkpoints for each material on [Hugging Face](https://huggingface.co/boeyyyy/AdaptiGraph). Download them into `./log/{data_name}/checkpoints` (run from the repo root):
+```
+hf download boeyyyy/AdaptiGraph --include "log/*" --local-dir .
+```
+The dir format should be:
 ```
 log
 ├── rope
